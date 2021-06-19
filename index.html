@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <meta
+      http-equiv="X-Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="node_modules/bulma/css/bulma.css"
+    />
+    <link rel="stylesheet" type="text/css" href="./main.css" />
+    <title>Electron MQTT</title>
+  </head>
+  <body>
+    <div class="main">
+      <div class="card connection">
+        <header class="card-header">
+          <h1 class="card-header-title">Connection</h1>
+        </header>
+        
+        <!-- 
+        <div class="card-content">
+          <form name="connection" class="content">
+            <div class="columns">
+              <div class="column">
+                <label class="label">Host</label>
+                <div class="control">
+                  <input class="input" name="host" type="text" value="broker.emqx.io">
+                </div>
+              </div>
+              <div class="column">
+                <label class="label">Port</label>
+                <div class="control">
+                  <input class="input" name="port" type="text" value="1883" type="number">
+                </div>
+              </div>
+              <div class="column">
+                <label class="label">Client ID</label>
+                <div class="control">
+                  <input class="input" name="clientId" type="text" value="mqttjs_6dd84101">
+                </div>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column">
+                <label class="label">Username</label>
+                <div class="control">
+                  <input class="input" name="username" type="text">
+                </div>
+              </div>
+              <div class="column">
+                <label class="label">Password</label>
+                <div class="control">
+                  <input class="input" name="password" type="text">
+                </div>
+              </div>
+              <div class="column">
+                <div></div>
+              </div>
+            </div>
+          </form>
+        </div> -->
+        <footer class="card-footer">
+          <button id="connectBtn" class="card-footer-item button is-primary">
+            Connect
+          </button>
+          <button
+            id="disconnectBtn"
+            class="card-footer-item button is-danger is-light"
+          >
+            Disconnect
+          </button>
+        </footer>
+      </div>
+      <div class="mqtt-sub-pub columns">
+        <div class="column">
+          <div class="card receiver">
+            <header class="card-header">
+              <h1 class="card-header-title">Receiver</h1>
+            </header>
+            <div class="card-content">
+              <div class="content">
+                <article id="article" class="message is-success"></article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="header">
+        <div class="field">
+          <label class="label" style="margin: 5%;">Modem</label>
+          <div class="control">
+            <div class="select">
+              <select name="modems" id="modems"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mqtt-sub-pub columns">
+        <!--  <div class="column">
+          <div class="card subscriber">
+            <header class="card-header">
+              <p class="card-header-title">
+                Subscriber
+              </p>
+            </header>
+            <div class="card-content">
+              <form name='subscriber' class="content">
+                <div class="field">
+                  <label class="label">Topic</label>
+                  <div class="control">
+                    <input name="topic" class="input" type="text" value="testtopic/electron">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">QoS</label>
+                  <div class="control">
+                    <div class="select">
+                      <select name="qos">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <div class="field is-grouped">
+                <p class="control">
+                  <button id="subBtn" class="card-footer-item button is-primary">Subscribe</button>
+                </p>
+                <p class="control">
+                  <button id="unsubBtn" class="card-footer-item button is-danger is-light">Unsubscribe</button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+        <div class="column">
+          <div class="card publisher">
+            <header class="card-header">
+              <p class="card-header-title">Adresi Ayarla</p>
+            </header>
+            <div class="card-content">
+              <form name="setAddressBox" class="content">
+                <div class="field">
+                  <label class="label">Adres</label>
+                  <div class="control">
+                    <input
+                      name="setAddressText"
+                      class="textarea"
+                      type='number'
+                      rows="1"
+                    ></input>
+                  </div>
+                </div>
+              </form>
+              <div class="field is-grouped">
+                <p class="control">
+                  <button
+                    id="setAddressBtn"
+                    class="card-footer-item button is-primary"
+                  >
+                    Ayarla
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="column">
+          <div class="card publisher">
+            <header class="card-header">
+              <p class="card-header-title">Publisher</p>
+            </header>
+            <div class="card-content">
+              <form name="publisher" class="content">
+                <div class="field">
+                  <label class="label">Topic</label>
+                  <div class="control">
+                    <input
+                      name="topic"
+                      class="input"
+                      type="text"
+                      value="testtopic/electron"
+                    />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">QoS</label>
+                  <div class="control">
+                    <div class="select">
+                      <select name="qos">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Payload</label>
+                  <div class="control">
+                    <textarea
+                      name="payload"
+                      class="textarea"
+                      rows="2"
+                      placeholder="e.g. Electron connection demo...!"
+                    ></textarea>
+                  </div>
+                </div>
+              </form>
+              <div class="field is-grouped">
+                <p class="control">
+                  <button
+                    id="sendBtn"
+                    class="card-footer-item button is-primary"
+                  >
+                    Send
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+        <div class="column">
+          <div class="card publisher">
+            <header class="card-header">
+              <p class="card-header-title">Mesaj Gönder</p>
+            </header>
+            <div class="card-content">
+              <form name="messageBox" class="content">
+                <div class="field">
+                  <label class="label">Adres</label>
+                  <div class="control">
+                    <input
+                      name="messageAddressText"
+                      class="textarea"
+                      type='number'
+                      rows="1"
+                    ></input>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Mesaj</label>
+                  <div class="control">
+                    <textarea
+                      name="messageContentText"
+                      class="textarea"
+                      rows="1"
+                    ></textarea>
+                  </div>
+                </div>
+              </form>
+              <div class="field is-grouped">
+                <p class="control">
+                  <button
+                    id="messageBtn"
+                    class="card-footer-item button is-primary"
+                  >
+                    Gönder
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card publisher">
+            <header class="card-header">
+              <p class="card-header-title">Yayın Yap</p>
+            </header>
+            <div class="card-content">
+              <form name="bradcastBox" class="content">
+                <div class="field">
+                  <label class="label">Mesaj</label>
+                  <div class="control">
+                    <textarea
+                      name="broadcastContentText"
+                      class="textarea"
+                      rows="1"
+                    ></textarea>
+                  </div>
+                </div>
+              </form>
+              <div class="field is-grouped">
+                <p class="control">
+                  <button
+                    id="broadcastBtn"
+                    class="card-footer-item button is-primary"
+                  >
+                    Gönder
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="mqtt-sub-pub columns">
+        <div class="column">
+          <div class="card publisher">
+            <header class="card-header">
+              <p class="card-header-title">Durumu Sorgula</p>
+            </header>
+            <div class="card-content">
+              <div class="field is-grouped">
+                <p class="control">
+                  <button
+                    id="statusBtn"
+                    class="card-footer-item button is-primary"
+                  >
+                    Sorgula
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card publisher">
+            <header class="card-header">
+              <p class="card-header-title">Ping At</p>
+            </header>
+            <div class="card-content">
+              <form name="pingBox" class="content">
+                <div class="field">
+                  <label class="label">Adres</label>
+                  <div class="control">
+                    <input
+                      name="pingText"
+                      class="textarea"
+                      type="number"
+                      rows="1"
+                    ></input>
+                  </div>
+                </div>
+              </form>
+              <div class="field is-grouped">
+                <p class="control">
+                  <button
+                    id="pingBtn"
+                    class="card-footer-item button is-primary"
+                  >
+                    Ping At
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card publisher">
+            <header class="card-header">
+              <p class="card-header-title">Batarya Kontrolü</p>
+            </header>
+            <div class="card-content">
+              <form name="batteryBox" class="content">
+                <div class="field">
+                  <label class="label">Adres</label>
+                  <div class="control">
+                    <input
+                      name="batteryText"
+                      class="textarea"
+                      type="number"
+                      rows="1"
+                    ></input>
+                  </div>
+                </div>
+              </form>
+              <div class="field is-grouped">
+                <p class="control">
+                  <button
+                    id="batteryBtn"
+                    class="card-footer-item button is-primary"
+                  >
+                    Kontrol Et
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>
